@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Adorable Chat App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container" style="display: none;">
+        <div class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-section">
+                    <span class="logo-emoji">🎀</span>
+                    <h1>💬 ChatHub</h1>
+                </div>
+                <button class="theme-toggle" title="Toggle Dark Mode">🌙</button>
+            </div>
+
+            <div class="user-info-bar" id="userInfoBar" onclick="openProfile()"
+                style="padding: 10px; font-size: 14px; background: rgba(255, 255, 255, 0.4); border-radius: 12px; margin-bottom: 15px; display: none; align-items: center; gap: 10px; border: 1px solid rgba(255, 255, 255, 0.5); cursor: pointer;">
+                <div id="userAvatar"
+                    style="background: #ff6b9d; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    ?</div>
+                <div style="display: flex; flex-direction: column;">
+                    <span id="userNameDisplay"
+                        style="color: #ff6b9d; font-weight: 600; font-family: 'Outfit', sans-serif;">Username</span>
+                    <span style="font-size: 10px; color: #888;">Online ✨</span>
+                </div>
+            </div>
+
+            <button class="btn-new-room" onclick="createNewRoom()">
+                ✨ New Room
+            </button>
+
+            <button class="btn-join-room" onclick="openJoinModal()">
+                🔗 Join Room
+            </button>
+
+            <p class="cute-text">Let's chat! 🥰</p>
+
+            <div class="rooms-list" id="roomsList">
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="btn-logout" onclick="handleLogout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </div>
+
+        <div class="chat-container">
+
+            <div class="chat-header">
+                <div class="room-info">
+                    <button class="btn-back" onclick="toggleSidebar(true)">⬅️</button>
+                    <div class="room-title-wrapper">
+                        <h2 id="roomTitle">Select a room</h2>
+                        <p id="roomMembers">No room selected</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="action-icon-btn" onclick="toggleRoomInfo()" title="Room Info">ℹ️</button>
+                    <button class="action-icon-btn" onclick="handleEditRoom()" title="Edit Group"
+                        id="btnEditRoom">✏️</button>
+                    <button class="action-icon-btn" onclick="handleLeaveRoom()" title="Leave Group"
+                        id="btnLeaveRoom">🚪</button>
+                    <button class="action-icon-btn" onclick="handleReportRoom()" title="Report Group"
+                        id="btnReportRoom">🚩</button>
+                    <button class="action-icon-btn" onclick="handleBlockRoom()" title="Block Group"
+                        id="btnBlockRoom">🚫</button>
+                    <button class="action-icon-btn" onclick="handleDeleteRoom()" title="Delete Group" id="btnDeleteRoom"
+                        style="color: #ff4757;">🗑️</button>
+                </div>
+            </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <div class="welcome-message" id="defaultWelcome">
+                    <div class="welcome-emoji">💬</div>
+                    <h3>✨ Welcome to ChatHub! ✨</h3>
+                    <p>Select a room from the sidebar to start chatting ✨</p>
+                    <p class="welcome-hint">Or create a new room to chat with friends! 🎉</p>
+                    <div class="welcome-floating-emojis">
+                        <span>⭐</span>
+                        <span>✨</span>
+                        <span>🎀</span>
+                        <span>🌸</span>
+                        <span>🦋</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                <span></span>
+                <span></span>
+                <span></span>
+                <p>Someone is typing<span id="typingDot">.</span></p>
+            </div>
+
+            <div class="message-input-area">
+                <div class="input-wrapper">
+                    <button class="emoji-btn" onclick="toggleEmojiPicker()" title="Add Emoji">😊</button>
+
+                    <div class="emoji-picker" id="emojiPicker">
+                        <div class="emoji-grid">
+                            <span onclick="insertEmoji('😀')">😀</span>
+                            <span onclick="insertEmoji('😍')">😍</span>
+                            <span onclick="insertEmoji('🥳')">🥳</span>
+                            <span onclick="insertEmoji('😂')">😂</span>
+                            <span onclick="insertEmoji('🤔')">🤔</span>
+                            <span onclick="insertEmoji('😴')">😴</span>
+                            <span onclick="insertEmoji('👍')">👍</span>
+                            <span onclick="insertEmoji('❤️')">❤️</span>
+                            <span onclick="insertEmoji('🔥')">🔥</span>
+                            <span onclick="insertEmoji('🎉')">🎉</span>
+                            <span onclick="insertEmoji('✨')">✨</span>
+                            <span onclick="insertEmoji('💯')">💯</span>
+                            <span onclick="insertEmoji('👀')">👀</span>
+                            <span onclick="insertEmoji('😅')">😅</span>
+                            <span onclick="insertEmoji('😎')">😎</span>
+                            <span onclick="insertEmoji('🚀')">🚀</span>
+                        </div>
+                    </div>
+
+                    <input type="text" id="messageInput" class="message-input" placeholder="Type something cute... 🥰"
+                        onkeypress="handleKeyPress(event)">
+
+                    <button class="btn-send" onclick="sendMessage()" title="Send Message">
+                        <span class="send-icon">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adorable Room Page Overlay -->
+    <div class="room-page-overlay" id="roomPageOverlay">
+        <div class="room-page-content">
+            <button class="room-page-close" onclick="closeRoomPage()">✕</button>
+
+            <div class="room-page-header">
+                <div class="room-page-icon">🌸</div>
+                <h2>Explore Rooms</h2>
+                <p>Create your own space or join an existing adorable room!</p>
+            </div>
+
+            <div class="room-tabs">
+                <button class="room-tab active" onclick="switchRoomTab('join')">Join Room</button>
+                <button class="room-tab" onclick="switchRoomTab('create')">Create Room</button>
+            </div>
+
+            <div class="room-tab-content active" id="tabJoin">
+                <div class="room-section">
+                    <h3>✨ Enter Room Code</h3>
+                    <div class="room-input-group">
+                        <input type="text" id="roomPageCodeInput" class="room-pink-input" placeholder="e.g., #CUTE2024">
+                        <button class="btn-pink-submit" onclick="joinRoomFromPageCode()">Join</button>
+                    </div>
+                </div>
+
+                <div class="divider">OR</div>
+
+                <div class="room-section">
+                    <h3 onclick="populatePageAvailableRooms()" style="cursor: pointer;">🏠 Available Rooms <small
+                            style="font-weight: normal; font-size: 11px;">(click to refresh)</small></h3>
+                    <div class="available-rooms" id="pageAvailableRooms">
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-tab-content" id="tabCreate">
+                <div class="room-section">
+                    <h3>✨ Create New Room</h3>
+                    <div class="create-form-group">
+                        <label>Room Name</label>
+                        <input type="text" id="createRoomName" class="room-pink-input"
+                            placeholder="e.g., My Awesome Room">
+                    </div>
+                    <div class="create-form-group">
+                        <label>Room Emoji/Icon</label>
+                        <input type="text" id="createRoomIcon" class="room-pink-input" placeholder="e.g., 🦄, 🌟, 🎀"
+                            maxlength="2">
+                    </div>
+                    <div class="create-form-group">
+                        <label>Room Code (Optional)</label>
+                        <input type="text" id="createRoomCode" class="room-pink-input" placeholder="e.g., #MYROOM">
+                    </div>
+                    <button class="btn-pink-submit w-100" onclick="handleCreateRoom()">Create Room ✨</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Page Overlay -->
+    <div class="room-page-overlay" id="profileOverlay">
+        <div class="room-page-content profile-content">
+            <button class="room-page-close" onclick="closeProfile()">✕</button>
+            <div class="room-page-header">
+                <div class="profile-avatar-large" id="profileAvatarLarge">?</div>
+                <h2 id="profileName">User Profile</h2>
+                <p>Welcome to your cute profile space! ✨</p>
+            </div>
+
+            <div class="profile-details">
+                <div class="profile-info-item">
+                    <span class="info-label">📧 Email</span>
+                    <span class="info-value" id="profileEmail">user@example.com</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="info-label">🔑 Password</span>
+                    <div class="password-group">
+                        <span class="info-value" id="profilePassword">••••••••</span>
+                        <button class="btn-show-pass" onclick="toggleProfilePassword()">👁️</button>
+                    </div>
+                </div>
+                <div class="profile-info-item">
+                    <span class="info-label">📅 Member Since</span>
+                    <span class="info-value" id="profileJoinedDate">Today</span>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <span class="stat-emoji">👥</span>
+                        <span class="stat-count" id="profileRoomsCount">0</span>
+                        <span class="stat-label">Rooms Joined</span>
+                    </div>
+                </div>
+
+                <div class="profile-rooms-section">
+                    <h3>🏠 Rooms You've Joined</h3>
+                    <div class="profile-rooms-list" id="profileJoinedRoomsList">
+                        <!-- Rooms will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="notificationSound" preload="auto"></audio>
+
+    <div class="auth-modal" id="authModal">
+        <div class="auth-container">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showLogin()">Login</button>
+                <button class="auth-tab" onclick="showRegister()">Sign Up</button>
+            </div>
+
+            <div class="auth-form" id="loginForm">
+                <h2>Welcome Back! ✨</h2>
+                <div class="form-group">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                    <div class="error-message" id="loginEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <div class="error-message" id="loginPasswordError"></div>
+                </div>
+                <div class="error-message" id="loginError"></div>
+                <button class="auth-btn" onclick="handleLogin()">Login</button>
+            </div>
+
+            <div class="auth-form hidden" id="registerForm">
+                <h2>Join ChatHub! ✨</h2>
+                <div class="form-group">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <div class="error-message" id="usernameError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                    <div class="error-message" id="emailError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password (min 6 chars)" required>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                    <div class="error-message" id="confirmPasswordError"></div>
+                </div>
+                <button class="auth-btn" onclick="handleRegister()">Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
